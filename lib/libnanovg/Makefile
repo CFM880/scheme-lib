@@ -9,11 +9,13 @@ TARGET = libnanovg.so
 OBJS = nanovg.o nanovg_gl.o
 
 LIBS =-L../libgl/   -lgles
-CFLAGS = -Wall -Wformat   -I../libgl -g -DLOG -DNANOVG_GL2_IMPLEMENTATION -DNANOVG_GL2 
+CFLAGS = -Wall -Wformat   -I../libgl -g -DLOG  -DNANOVG_GLES2_IMPLEMENTATION -DNANOVG_GLES2 
 CXXFLAGS= -Wall -Wformat
 OTHERS=
 
 UNAME_S := $(shell uname -s)
+OS_NAME :=$(shell echo $(UNAME_S)| tr '[A-Z]' '[a-z]')
+
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
 	LIBS += 
@@ -31,7 +33,7 @@ ifeq ($(UNAME_S), Darwin) #APPLE
 #	CXXFLAGS += -D__APPLE__
 endif
 
-ifeq ($(UNAME_S), MINGW32_NT-6.1)
+ifeq ($(findstring mingw32_nt,$(OS_NAME)),mingw32_nt)
    ECHO_MESSAGE = "Windows"
 	LIBS +=  
 	CXXFLAGS += 

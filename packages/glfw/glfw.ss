@@ -559,7 +559,8 @@
  glfw-destroy-window
  glfw-create-standard-cursor
  glfw-set-cursor
- 
+
+ glfw-make-char-mods-callback
  get-glfw-get-proc-address
  glfw-make-cursor-pos-callback
  glfw-set-cursor-pos-callback
@@ -567,12 +568,22 @@
  glfw-set-window-size-callback
  glfw-set-mouse-button-callback
  glfw-make-mouse-button-callback
-
+ glfw-set-scroll-callback
+ glfw-make-scroll-callback
+ glfw-make-char-callback
+ glfw-set-char-callback
+ glfw-set-char-mods-callback
+ glfw-get-clipboard-string
+ glfw-set-clipboard-string
+ glfw-post-empty-event
+ glfw-set-input-mode
+ glfw-get-cursor-pos
  glad-load-gl
  glad-load-gl-loader
  glad-load-gles2-loader
  glad-load-gles1-loader
- 
+ glfw-set-window-size
+ glfw-set-window-title
 
  )	
 
@@ -1110,9 +1121,9 @@
   (define lib-name
     (case (machine-type)
       ((arm32le) "libglfw.so")
-      ((a6nt i3nt)  "libglfw.dll")
-      ((a6osx i3osx)  "libglfw.so")
-      ((a6le i3le) "libglfw.so")))
+      ((a6nt i3nt ta6nt ti3nt)  "libglfw.dll")
+      ((a6osx i3osx ta6osx ti3osx)  "libglfw.so")
+      ((a6le i3le ta6le ti3le) "libglfw.so")))
 
   (define lib (load-lib lib-name))
 
@@ -1122,11 +1133,17 @@
   (define glfw-window-hint 
     (foreign-procedure "glfwWindowHint" (int int) void ))
 
+  (define glfw-set-window-size
+    (foreign-procedure "glfwSetWindowSize" (void* int int) void))
+  (define glfw-set-window-title
+    (foreign-procedure "glfwSetWindowTitle" (void* string) void))
+   
   (define glfw-create-window 
     (foreign-procedure "glfwCreateWindow" (int int string void* void* ) void* ))
   (define glfw-terminate 
     (foreign-procedure "glfwTerminate" () void ))
 
+  
   (define $glfw-set-key-callback
     (foreign-procedure "glfwSetKeyCallback" (void* void*) void* ))
 
@@ -1145,18 +1162,51 @@
    (define $glfw-set-mouse-button-callback
     (foreign-procedure "glfwSetMouseButtonCallback" (void* void*) void*))
 
+   (define $glfw-set-scroll-callback
+     (foreign-procedure "glfwSetScrollCallback" (void* void*) void*))
+
+    (define $glfw-set-joystick-callback
+     (foreign-procedure "glfwSetJoystickCallback" (void* void*) void*))
+
+    (define $glfw-set-char-callback
+     (foreign-procedure "glfwSetCharCallback" (void* void*) void*))
+
+    (define $glfw-set-char-mods-callback
+      (foreign-procedure "glfwSetCharModsCallback" (void* void*) void*))
+
+     (define glfw-get-clipboard-string
+       (foreign-procedure "glfwGetClipboardString" (void* ) string))
+     
+
+     (define glfw-set-clipboard-string
+       (foreign-procedure "glfwSetClipboardString" (void* string ) void))
+
+     ;; (define $glfw-set-framebuffer-size-callback
+     ;;   (foreign-procedure "glfwSetFrameBufferSizeCallback" (void* int int) void))
+     (define glfw-post-empty-event
+        (foreign-procedure "glfwPostEmptyEvent" () void))
+     
    (define glfw-wait-events
      (foreign-procedure "glfwWaitEvents" () void))
 
    (define glfw-create-standard-cursor
     (foreign-procedure "glfwCreateStandardCursor" (int) void*))
 
-    (define glfw-create-cursor
-      (foreign-procedure "glfwCreateCursor" (void* int int) void*))
+   (define glfw-create-cursor
+     (foreign-procedure "glfwCreateCursor" (void* int int) void*))
 
-     (define glfw-set-cursor
-       (foreign-procedure "glfwSetCursor" (void* void*) void))
+   (define glfw-set-cursor
+     (foreign-procedure "glfwSetCursor" (void* void*) void))
 
+   
+   (define glfw-set-input-mode
+     (foreign-procedure "glfwSetInputMode" (void* int int) void))
+
+   (define glfw-get-cursor-pos
+     (foreign-procedure "glfwGetCursorPos" (void* void* void*) void))
+
+
+   
   (define (glfw-set-key-callback win fun)
     ($glfw-set-key-callback win (glfw-make-key-callback fun)))
 
@@ -1166,14 +1216,53 @@
   (define (glfw-set-window-size-callback win fun)
     ($glfw-set-window-size-callback win (glfw-make-window-size-callback fun)  ))
 
+   (define (glfw-set-char-mods-callback win fun)
+    ($glfw-set-char-mods-callback win (glfw-make-char-mods-callback fun)))
+ 
+  ;; (define (glfw-set-framebuffer-size-callback win fun)
+  ;;   ($glfw-set-framebuffer-size-callback win (glfw-make-framebuffer-size-callback fun)  ))
+
+  
+  
   (define (glfw-set-mouse-button-callback win fun)
     ($glfw-set-mouse-button-callback win (glfw-make-mouse-button-callback fun) ))
 
+  (define (glfw-set-scroll-callback win fun)
+    ($glfw-set-scroll-callback win (glfw-make-scroll-callback fun)))
+
+  (define (glfw-set-char-callback win fun)
+    ($glfw-set-char-callback win (glfw-make-char-callback fun)))
+    
+   (define (glfw-set-joystick-callback win fun)
+    ($glfw-set-scroll-callback win (glfw-make-joystick-callback fun)))
+
+   (define glfw-make-scroll-callback
+    (lambda (p)
+      (let ([code (foreign-callable p (void* double double) void)])
+	(lock-object code)
+	(foreign-callable-entry-point code))))
+
+
+   (define glfw-make-joystick-callback 
+     (lambda (p)
+       (let ([code (foreign-callable p (void* int int ) void)])
+	 (lock-object code)
+	 (foreign-callable-entry-point code))))
+
+   
   (define glfw-make-key-callback
     (lambda (p)
       (let ([code (foreign-callable p (void* int int   int  int) void)])
 	(lock-object code)
 	(foreign-callable-entry-point code))))
+
+
+  (define glfw-make-char-mods-callback
+    (lambda (p)
+      (let ([code (foreign-callable p (void* int int) void)])
+	(lock-object code)
+	(foreign-callable-entry-point code))))
+  
 
   (define glfw-make-cursor-pos-callback 
     (lambda (p)
@@ -1187,11 +1276,23 @@
 	(lock-object code)
 	(foreign-callable-entry-point code))))
 
+   (define glfw-make-framebuffer-size-callback 
+    (lambda (p)
+      (let ([code (foreign-callable p (void* int int ) void)])
+	(lock-object code)
+	(foreign-callable-entry-point code))))
+   
   (define glfw-make-mouse-button-callback 
     (lambda (p)
       (let ([code (foreign-callable p (void* int int int ) void)])
 	(lock-object code)
 	(foreign-callable-entry-point code))))
+
+   (define glfw-make-char-callback 
+     (lambda (p)
+       (let ([code (foreign-callable p (void*  int ) void)])
+	 (lock-object code)
+	 (foreign-callable-entry-point code))))
   
   ;;gladLoadGLLoader
   (define glfw-window-should-close

@@ -108,7 +108,7 @@
   (define hunk (apply string-append body))
   (string-append (http:header
 		  (cons (cons "Content-Length"
-			      (number->string (string-length hunk)))
+			      (number->string  (bytevector-length (string->utf8 hunk)) )) ;;(string-length hunk)
 			alist))
 		 hunk))
 
@@ -190,6 +190,7 @@
 		  (if (number? (car reply))
 		      (apply http:error-page reply)
 		      (apply http:error-page (cons 500 reply))))
+		 ((eqv? '() reply))
 		 (else (http:error-page 500 "Internal Server Error")))))
 	((not query-string)
 	 (http:error-page 400 "Bad Request" (html:plain request-line)))

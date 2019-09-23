@@ -1,70 +1,58 @@
 # scheme-lib
-scheme-lib 是一个scheme使用的库。目前支持android mac linux windows，其它平台在规划中。
-# linux、mac
-### 安装编译
-1. linux下安装`apt-get install freeglut3-dev  libgles1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev  libalut-dev libopenal-dev libffi-dev`依赖库。
-2. mac安装xcode command line tool。
+scheme-lib 是一个scheme使用的库。目前支持android osx linux windows，其它平台在规划中。
+
+官方主页：[http://scheme-lib.evilbinary.org/](http://scheme-lib.evilbinary.org/)
+QQ群：Lisp兴趣小组239401374
+
+
+# 安装编译
+
+## Linux
+
+1. 执行`sudo apt-get install build-essential freeglut3-dev libgles1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev libalut-dev libopenal-dev libffi-dev`命令安装依赖库。
 2. 执行`make`命令就可以编译，对应平台的文件在`bin`目录下。
 3. 进入`bin`目录，执行`source env.sh`，然后运行`./scheme --script ../apps/hello.ss`就可以运行例子。
 
-### 截图
-<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/game-demo.png" width="400px" /><img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/gui-demo.png" width="400px" />
+## Mac OS X
+1. 安装[XCode Command Line Tool或XCode](https://developer.apple.com/download/more/)。
+2. [brew](https://www.macports.org/)或者[port](https://www.macports.org/)安装`glfw ffmpeg`开发库。
+3. 执行`make`命令就可以编译，对应平台的文件在`bin`目录下。
+4. 进入`bin`目录，执行`source env.sh`，然后运行`./scheme --script ../apps/hello.ss`就可以运行例子。
 
-<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/helloworld2.png" width="400px" /> <img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/showimage.png" width="400px" />
+## Windows
+1. 下载已经去除了，因为有人说抱怨运行报错，这下你只能自己编译。真需要的话，加群下载。
+
+# 使用scheme lib的项目
+scheme lib官方网站：[http://scheme-lib.evilbinary.org/](http://scheme-lib.evilbinary.org/)  
+letsgo 莱茨狗抢狗软件：[https://github.com/scheme-lib/letsgo](https://github.com/scheme-lib/letsgo)  
+duck-editor 鸭子编辑器：[https://github.com/evilbinary/duck-editor](https://github.com/evilbinary/duck-editor)
+
+# 文档
+[开发文档](https://github.com/evilbinary/scheme-lib/tree/master/docs)https://github.com/evilbinary/scheme-lib/tree/master/docs
+
+
+
+# 截图
+<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/duck-demo.png" width="800px" />
+
+<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/calc.png" width="400px" /><img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/editor2.png" width="400px" />
+
+<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/wechat-demo.png" width="400px" /><img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/new-gui2.jpg" width="400px" />
+
+<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/game-demo.png" width="400px" /><img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/new-gui.jpg" width="400px" />
 
 <img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/draw-image.png" width="400px" /> <img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/box2d-demo.png" width="400px" />
 
-# android
+# Android
 ## 新手入门
-### 环境安装
-1. 先安装[scheme-release-1.2.apk][1]
-2. 将手机连接电脑，开启adb调试模式（需要安装adb命令,不会用goolge）。进入`cd scheme-lib/android/src/packages`，在shell下执行`python sync.py`命令,这样每次修改后，会自动同步packages下的代码到手机`/sdcard/org.evilbinary.chez/lib`目录下面，这样方便运行了。
-3. 在run界面里面输入测试代码。比如:
- 
-```scheme
-(import (test) (gles1) (glut) ) 
-(load "/sdcard/org.evilbinary.chez/lib/apps/hello.ss")
-```
-### demo例子
-```scheme
-;imgui例子
-;imgui hello,world
-(define (imgui-test-hello-world)
-       (glut-init)
-       (imgui-init)
-       (imgui-scale 2.5 2.5)
-       (glut-touch-event (lambda (type x y)
-            (imgui-touch-event type x y)
-                  ))
-            (glut-key-event (lambda (event)
-                  (imgui-key-event
-                     (glut-event-get event 'type)
-                     (glut-event-get event 'keycode)
-                     (glut-event-get event 'char)
-                     (glut-event-get event 'chars))
-                   (if (= 4 (glut-event-get event 'keycode ))
-                     (begin (imgui-exit)
-                     (glut-exit)))
-                  ))
-         (glut-display (lambda ()
-                   (imgui-render-start)
-                   ;(imgui-test)
-                   (imgui-set-next-window-size (imgui-make-vec2 200.0 140.0) 0)
-                   (imgui-begin "evilbinary" 0)
-                   (imgui-text "hello,world")
-                   (imgui-end)
-                   (imgui-render-end)
-                  ))
-         (glut-reshape (lambda(w h)
-                            (imgui-resize w h)
-                             ))
-         (glut-main-loop)
-         (imgui-exit))		
-```
+### 环境安装 手机版
+1. 先安装[scheme-release-1.6.apk][1]
+2. 点击下载app库和package库
+3. 下载成功后点击运行计算机demo或者直接打开apps里面的应用demo点击运行
 
 运行效果如下：
-  
-<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/helloworld.png" width="350px" />
+
+<img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/m-game2.png" width="350px" /><img src="https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/screenshot/m-game.png" width="350px" />
 
 ### 测试配置
 1. 在手机上输入运行代码可能不方便，所以弄了个配置文件，把需要运行的代码放到配置中会自己加载代码运行。配置文件为`config.xml`内容如下:
@@ -76,43 +64,8 @@ scheme-lib 是一个scheme使用的库。目前支持android mac linux windows�
 	</map>
 	```
 
-2. `adb push config.xml /sdcard/org.evilbinary.chez/conf/config.xml`
+2. `adb push config.xml /sdcard/org.evilbinary.chez/scm/conf/config.xml`
 3. 打开scheme app就可以直接运行啦。
 
-## 高级篇
-### android使用外部库
-1. 手工添加Android.mk和源码文件到`scheme-lib/android/src`下命名为libhadd的文件夹。
-   add.c 内容如下：
-	 ```c
-	#include <stdio.h>
-	#include <stdarg.h>
-	int add(int a,int b){ 
-		return a+b;
-	}    
-	```
-	Android.mk内容如下：
-	```makefile
-	LOCAL_PATH := $(call my-dir)
-	include $(CLEAR_VARS)
-	include $(LOCAL_PATH)/../Optimizations.mk
-	LOCAL_MODULE    := add
-	LOCAL_SRC_FILES := add.c
-	LOCAL_C_INCLUDES := 
-	LOCAL_CFLAGS +=  -I. -I./c/
-	LOCAL_CFLAGS += -g -Wall -DANDROID    -DINLINES -DGC_MACROS   -Wno-unused-parameter -pie -fPIE   -fPIC
-	LOCAL_LDLIBS += -ldl -llog -lz
-	include $(BUILD_SHARED_LIBRARY)
-	```
-
-2. 执行`make android`。
-3. 将编译后生成的库`android/src/libs/libadd.so` 同步到`/sdcard/org.evilbinary.chez/lib`目录下，这样能调用外部库了。
-4. 调用外`libadd.so`库和使用代码如下：
-	
-	```scheme
-	(import  (scheme) (utils libutil) )
-	(load-lib "libadd.so")
-	(define-c-function int add (int int) )
-	(display (add 100 1234))
-	```
-
-[1]: https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/apk/scheme-release-1.2.apk   "scheme apk"
+[1]: https://raw.githubusercontent.com/evilbinary/scheme-lib/master/data/apk/scheme-release-1.6.apk   "scheme apk"
+[2]: https://github.com/evilbinary/data/blob/master/pic/scheme-lib-2.0-win32.zip  "scheme-lib-2.0-win32.zip"

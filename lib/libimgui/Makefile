@@ -27,10 +27,12 @@ CXXFLAGS=  -g -std=c++11 	\
 
 
 UNAME_S := $(shell uname -s)
+OS_NAME :=$(shell echo $(UNAME_S)| tr '[A-Z]' '[a-z]')
+
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
-	LIBS += 
-	CXXFLAGS += -DGLAD -I../3rdparty/include -I../libglfw  -I../libglut  -L../libglfw/  -L../libglut/ -lglut -lglfw
+	LIBS += -lglut -lglfw
+	CXXFLAGS +=  -D"__builtin_cpu_supports(x)=1" -DGLAD -I../3rdparty/include -I../libglfw  -I../libglut  -L../libglfw/  -L../libglut/ 
 	CXXFLAGS += -fPIC 
 	CFLAGS +=
 endif
@@ -44,7 +46,7 @@ ifeq ($(UNAME_S), Darwin) #APPLE
 #	CXXFLAGS += -D__APPLE__
 endif
 
-ifeq ($(UNAME_S), MINGW32_NT-6.1)
+ifeq ($(findstring mingw32_nt,$(OS_NAME)),mingw32_nt)
    ECHO_MESSAGE = "Windows"
 	LIBS += 
 	CXXFLAGS+= -DGLAD -I../3rdparty/include -I../libglfw  -I../libglut  -L../libglfw/  -L../libglut/ -lglut -lglfw

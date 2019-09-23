@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Copyright 2016-2080 evilbinary.
-;作者:evilbinary on 12/24/16.
-;邮箱:rootdebug@163.com
+;author:evilbinary on 12/24/16.
+;email:rootdebug@163.com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "../packages/slib/slib.ss")
 (import (net socket) (net socket-ffi ) (cffi cffi) )
@@ -10,8 +10,7 @@
 (require 'cgi)
 (require 'array)
 
-(define port 8000)
-
+(define port 8080)
 (define socket (make-socket AF_INET SOCK_STREAM port ))
 
 (socket:bind socket)
@@ -22,7 +21,7 @@
     (printf "HTTP=>%a\n" request-line)
     (printf "path=%a\n" (cadr request-line))
     
-    (string-append (http:status-line 200 "")
+    (string-append
 		 (http:content
 		  '(("Content-Type" . "text/html"))
 		  (html:head "hello" "")

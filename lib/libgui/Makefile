@@ -5,25 +5,27 @@
 ##########################################################
 
 
-TARGET = libgui.so
-OBJS = gui.o
+TARGET = libgui.so 
+OBJS = graphic.o edit.o shader.o mat4.o fontstash.o stb_truetype.o utf8-utils.o
 PLATFORM=
 BITS =$(shell getconf LONG_BIT)
 
 
-LIBS =-L../libnanovg -lnanovg
-CFLAGS = -Wall -Wformat  -DGLAD \
-	-L../libnanovg -I../libnanovg  
+LIBS = -L../libgl -lgles
+CFLAGS = -Wall -Wformat -g  -DGLAD \
+	-I../libgl \
 
 CXXFLAGS= -Wall -Wformat
 
 UNAME_S := $(shell uname -s)
+OS_NAME :=$(shell echo $(UNAME_S)| tr '[A-Z]' '[a-z]')
+
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
 	LIBS += 
 	CXXFLAGS += 
 	CXXFLAGS += 
-	CFLAGS +=  -fPIC
+	CFLAGS +=  -fPIC -std=c99
 	ifeq ($(BITS), 32)
 		PLATFORM=i3le
 	else
@@ -33,10 +35,10 @@ endif
 
 ifeq ($(UNAME_S), Darwin) #APPLE
 	ECHO_MESSAGE = "Mac OS X"
-	LIBS += 
+	LIBS +=  -L/opt/local/lib/ 
 	CXXFLAGS += 
 	CXXFLAGS += 
-	CFLAGS +=
+	CFLAGS +=  -I/opt/local/include/ 
 	ifeq ($(BITS), 32)
 		PLATFORM=i3osx
 	else
@@ -45,13 +47,14 @@ ifeq ($(UNAME_S), Darwin) #APPLE
 #	CXXFLAGS += -D__APPLE__
 endif
 
-ifeq ($(UNAME_S), MINGW32_NT-6.1)
+ifeq ($(findstring mingw32_nt,$(OS_NAME)),mingw32_nt)
    	ECHO_MESSAGE = "Windows"
 	LIBS += 
 	CXXFLAGS += 
 	CXXFLAGS += 
 	CFLAGS +=
 	PLATFORM=i3nt
+	TARGET = libgui.dll
 endif
 
 .cpp.o:

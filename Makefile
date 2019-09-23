@@ -8,40 +8,47 @@
 TARGET =bin/scheme
 EXT=.so
 UNAME_S := $(shell uname -s)
+OS_NAME :=$(shell echo $(UNAME_S)| tr '[A-Z]' '[a-z]')
 
-ifeq ($(UNAME_S), MINGW32_NT-6.1)
+ifeq ($(findstring mingw32_nt,$(OS_NAME)),mingw32_nt)
   EXT=.dll
 endif
 SOFILES= lib/libscm/libscm$(EXT) \
-		 lib/libglut/libglut$(EXT)  \
-		 lib/libimgui/libimgui$(EXT) \
-		 lib/libffi/libffi$(EXT)  \
-		 lib/libglfw/libglfw$(EXT)  \
+		 lib/libcffi/libcffi$(EXT)  \
 		 lib/libgl/libgles$(EXT)  \
-		 lib/libnanovg/libnanovg$(EXT)  \
+		 lib/libc/libcc$(EXT) \
 		 lib/libgui/libgui$(EXT)  \
+		 lib/libglfw/libglfw$(EXT)  \
+		 lib/libvideo/libvideo$(EXT)  \
 		 lib/libalut/libalut$(EXT)  \
 		 lib/libsocket/libsocket$(EXT)  \
+		 lib/libglut/libglut$(EXT)  \
 		 lib/scheme/scheme	\
 		 lib/boot/scheme.boot	\
 		 lib/boot/petite.boot	\
+		 lib/libimgui/libimgui$(EXT) \
+		 lib/libnanovg/libnanovg$(EXT)  \
+
 		 
 BINFILES=bin/libscm$(EXT) \
-		 bin/libglut$(EXT)  \
-		 bin/libimgui$(EXT) \
-		 bin/libffi$(EXT)  \
+		 bin/libcffi$(EXT)  \
+		 bin/libgui$(EXT)  \
 		 bin/libglfw$(EXT)  \
 		 bin/libgles$(EXT)  \
+		 bin/libc/libc$(EXT) \
+		 bin/libglut$(EXT)  \
 		 bin/libnanovg$(EXT)  \
-		 bin/libgui$(EXT)  \
+		 bin/libvideo$(EXT)  \
 		 bin/libsocket$(EXT)  \
 		 bin/libalut$(EXT)  \
+		 bin/libimgui$(EXT) \
+
 
 all: $(TARGET)
 	@echo "All build finish ^_^ have fun!"
 
 $(TARGET):  $(SOFILES)
-	@for n in $^; do cp $$n bin ; done
+	@for n in $^; do cp -rf $$n bin ; done
 
 $(SOFILES):
 	$(MAKE) -C lib

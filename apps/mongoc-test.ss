@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Copyright 2016-2080 evilbinary.
-;作者:evilbinary on 12/24/16.
-;邮箱:rootdebug@163.com
+;author:evilbinary on 12/24/16.
+;email:rootdebug@163.com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (import  (scheme)  (cffi cffi)  (mongoc mongoc-ffi) (mongoc bson-ffi)  )
@@ -53,7 +53,7 @@
 	  (loop  (mongoc-cursor-next cursor  doc ) )
 	  )
 	)))
-(cffi-log #t)
+;;(cffi-log #t)
 ;;insert data
 (set! json "{ \"_id\": 123, \"type\": \"misc\", \"item\":\"card\", \"qty\": 15 }")
 (set! insert (bson-new-from-json json (string-length json) error))
